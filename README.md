@@ -48,7 +48,7 @@ xcodebuild -project TomatoClock.xcodeproj -scheme TomatoClock -configuration Deb
 bash scripts/package-dmg.sh
 ```
 
-成功后产物在 **`dist/TsdyTomatoClock-0.1.0.dmg`**（版本号以脚本内 `VERSION` 为准）。DMG 内含 **`TsdyTomatoClock.app`**，拖到「应用程序」即可。
+成功后产物在 **`dist/TsdyTomatoClock-1.0.0.dmg`**（版本号以脚本内 `VERSION` 为准）。DMG 内含 **`TsdyTomatoClock.app`**，拖到「应用程序」即可。
 
 ## 工程结构（简要）
 
