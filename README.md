@@ -61,7 +61,3 @@ bash scripts/package-dmg.sh
 | `TomatoClockTests/` | 逻辑单元测试 |
 | `TomatoClockUITests/` | UI 测试 |
 | `scripts/` | 测试、DMG 等脚本 |
-
-## 图标缓存说明
-
-若更新 `AppIcon` 后 Dock 仍显示旧图标，可先退出应用，必要时执行 `killall Dock` 刷新 Dock，或删除「应用程序」内旧包后再安装新构建。
