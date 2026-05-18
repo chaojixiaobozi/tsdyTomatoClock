@@ -42,7 +42,7 @@ public final class PomodoroNotificationService: NSObject, UNUserNotificationCent
         cancelAll()
         guard remainingSeconds > 1 else { return }
         let content = UNMutableNotificationContent()
-        content.title = "番茄钟"
+        content.title = "TsdyTomatoClock"
         content.body = phaseEndBody(for: phase)
         content.sound = UNNotificationSound.default
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(remainingSeconds), repeats: false)

@@ -28,19 +28,23 @@ final class PomodoroEngineTests: XCTestCase {
         XCTAssertEqual(e.remainingSeconds(at: tResume), 25 * 60 - 60)
     }
 
-    func testNaturalWorkCompletionIncrementsTodayAndGoesShortBreak() {
+    func testNaturalWorkCompletionGoesAwaitingShortBreakThenConfirmRuns() {
         var e = PomodoroEngine(config: .default, calendarDay: "2026-05-18")
         e.start(at: t0)
         let end = t0.addingTimeInterval(25 * 60)
-        e.acknowledgeSegmentComplete(at: end, naturalCompletion: true)
+        e.completeCurrentSegmentNaturally(at: end)
         XCTAssertEqual(e.todayCompletedPomodoros, 1)
         XCTAssertEqual(e.completedWorkInCycle, 1)
         XCTAssertEqual(e.phase, .shortBreak)
+        XCTAssertEqual(e.runState, .awaitingAdvance)
+        XCTAssertEqual(e.remainingSeconds(at: end), 0)
+
+        e.confirmAdvance(at: end)
         XCTAssertEqual(e.runState, .running)
         XCTAssertEqual(e.remainingSeconds(at: end), 5 * 60)
     }
 
-    func testFourthNaturalWorkGoesLongBreak() {
+    func testFourthNaturalWorkGoesLongBreakAfterConfirmChain() {
         var cfg = PomodoroConfig.default
         cfg.workDuration = 60
         cfg.shortBreakDuration = 30
@@ -52,24 +56,36 @@ final class PomodoroEngineTests: XCTestCase {
         e.start(at: now)
 
         for round in 1...3 {
-            XCTAssertEqual(e.phase, .work, "round \(round) should start in work")
+            XCTAssertEqual(e.phase, .work, "round \(round)")
             now = now.addingTimeInterval(60)
-            e.acknowledgeSegmentComplete(at: now, naturalCompletion: true)
-            XCTAssertEqual(e.phase, .shortBreak, "after work \(round)")
+            e.completeCurrentSegmentNaturally(at: now)
+            XCTAssertEqual(e.runState, .awaitingAdvance)
+            XCTAssertEqual(e.phase, .shortBreak)
+            e.confirmAdvance(at: now)
+            XCTAssertEqual(e.runState, .running)
+
             now = now.addingTimeInterval(30)
-            e.acknowledgeSegmentComplete(at: now, naturalCompletion: true)
+            e.completeCurrentSegmentNaturally(at: now)
+            XCTAssertEqual(e.runState, .awaitingAdvance)
+            XCTAssertEqual(e.phase, .work)
+            e.confirmAdvance(at: now)
+            XCTAssertEqual(e.runState, .running)
         }
 
         XCTAssertEqual(e.phase, .work)
         now = now.addingTimeInterval(60)
-        e.acknowledgeSegmentComplete(at: now, naturalCompletion: true)
+        e.completeCurrentSegmentNaturally(at: now)
         XCTAssertEqual(e.phase, .longBreak)
+        XCTAssertEqual(e.runState, .awaitingAdvance)
         XCTAssertEqual(e.completedWorkInCycle, 4)
         XCTAssertEqual(e.todayCompletedPomodoros, 4)
+
+        e.confirmAdvance(at: now)
+        XCTAssertEqual(e.runState, .running)
         XCTAssertEqual(e.remainingSeconds(at: now), 90)
     }
 
-    func testLongBreakCompletionResetsCycle() {
+    func testLongBreakCompletionResetsCycleAfterConfirm() {
         var cfg = PomodoroConfig.default
         cfg.workDuration = 10
         cfg.shortBreakDuration = 5
@@ -82,37 +98,46 @@ final class PomodoroEngineTests: XCTestCase {
         for _ in 1...3 {
             XCTAssertEqual(e.phase, .work)
             now = now.addingTimeInterval(10)
-            e.acknowledgeSegmentComplete(at: now, naturalCompletion: true)
+            e.completeCurrentSegmentNaturally(at: now)
+            e.confirmAdvance(at: now)
             XCTAssertEqual(e.phase, .shortBreak)
             now = now.addingTimeInterval(5)
-            e.acknowledgeSegmentComplete(at: now, naturalCompletion: true)
+            e.completeCurrentSegmentNaturally(at: now)
+            e.confirmAdvance(at: now)
         }
 
         XCTAssertEqual(e.phase, .work)
         now = now.addingTimeInterval(10)
-        e.acknowledgeSegmentComplete(at: now, naturalCompletion: true)
+        e.completeCurrentSegmentNaturally(at: now)
         XCTAssertEqual(e.phase, .longBreak)
+        e.confirmAdvance(at: now)
 
         now = now.addingTimeInterval(12)
-        e.acknowledgeSegmentComplete(at: now, naturalCompletion: true)
+        e.completeCurrentSegmentNaturally(at: now)
         XCTAssertEqual(e.phase, .work)
+        XCTAssertEqual(e.runState, .awaitingAdvance)
+        XCTAssertEqual(e.completedWorkInCycle, 0)
+
+        e.confirmAdvance(at: now)
+        XCTAssertEqual(e.runState, .running)
         XCTAssertEqual(e.completedWorkInCycle, 0)
     }
 
-    func testSkipWorkDoesNotIncrementToday() {
+    func testSkipWorkDoesNotIncrementTodayAndAlwaysShortBreak() {
         var e = PomodoroEngine(config: .default, calendarDay: "2026-05-18")
         e.start(at: t0)
         e.skipCurrentSegment(at: t0.addingTimeInterval(1))
         XCTAssertEqual(e.todayCompletedPomodoros, 0)
         XCTAssertEqual(e.completedWorkInCycle, 0)
         XCTAssertEqual(e.phase, .shortBreak)
+        XCTAssertEqual(e.runState, .running)
     }
 
     func testResetRoundClearsCycleButKeepsToday() {
         var e = PomodoroEngine(config: .default, calendarDay: "2026-05-18")
         e.start(at: t0)
         let end = t0.addingTimeInterval(25 * 60)
-        e.acknowledgeSegmentComplete(at: end, naturalCompletion: true)
+        e.completeCurrentSegmentNaturally(at: end)
         XCTAssertEqual(e.todayCompletedPomodoros, 1)
         e.resetRound()
         XCTAssertEqual(e.runState, .idle)
@@ -126,5 +151,22 @@ final class PomodoroEngineTests: XCTestCase {
         e.rolloverCalendarDayIfNeeded(calendarDay: "2026-05-19")
         XCTAssertEqual(e.todayCompletedPomodoros, 0)
         XCTAssertEqual(e.currentCalendarDay, "2026-05-19")
+    }
+
+    func testPresetConfigsMatchTable() {
+        let c255 = PomodoroPreset.classic255.config
+        XCTAssertEqual(c255.workDuration, 25 * 60)
+        XCTAssertEqual(c255.shortBreakDuration, 5 * 60)
+        XCTAssertEqual(c255.longBreakDuration, 15 * 60)
+
+        let c4515 = PomodoroPreset.fortyfive15.config
+        XCTAssertEqual(c4515.workDuration, 45 * 60)
+        XCTAssertEqual(c4515.shortBreakDuration, 15 * 60)
+        XCTAssertEqual(c4515.longBreakDuration, 15 * 60)
+
+        let c5217 = PomodoroPreset.fiftytwo17.config
+        XCTAssertEqual(c5217.workDuration, 52 * 60)
+        XCTAssertEqual(c5217.shortBreakDuration, 17 * 60)
+        XCTAssertEqual(c5217.longBreakDuration, 30 * 60)
     }
 }

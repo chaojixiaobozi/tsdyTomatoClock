@@ -1,6 +1,6 @@
 # Mac 番茄钟 — 技术方案（简版）
 
-> 依据 `PRD.md` v0.1；目标：**实现简单、界面简洁、番茄色系、自动化测试保障交付**。
+> 依据 `PRD.md`（含 **v0.2** 第 9 节）；目标：**实现简单、界面简洁、番茄色系、自动化测试保障交付**。
 
 ---
 
@@ -128,3 +128,50 @@ TomatoClock/
 | 版本 | 日期 | 说明 |
 |------|------|------|
 | 0.1 | 2026-05-18 | 初稿：简架构、SwiftUI、番茄色与双测策略 |
+| 0.2 | 2026-05-19 | 追加：阶段结束前置窗口、待确认流转、时长预设（见第 9 节） |
+
+---
+
+## 9. v0.2 技术落点（对齐 PRD 第 9 节）
+
+本节为 **v0.2** 实现说明；与上文冲突时以本节为准。
+
+### 9.1 阶段结束：主窗口前置
+
+- **触发**：仅当**当前阶段自然计时到点**（与 PRD 一致：是否在「跳过」时也前置由产品拍板；**技术默认**：仅自然结束触发前置，跳过不抢焦点）。
+- **实现**：在 **AppKit** 侧对主窗口执行激活与前置，例如 `NSApplication.shared.activate(ignoringOtherApps: true)` 后 `NSWindow.makeKeyAndOrderFront(nil)`（或通过 `NSApp.windows` / `NSWindow` 引用拿到 `WindowGroup` 对应窗口）。SwiftUI 中可用 `NSApplicationDelegate` / `WindowAccessor`（`NSViewRepresentable` 取 `view.window`）或 `@EnvironmentObject` 注入 `WindowController` 协议，由 **ViewModel** 在 Domain 报告「自然结束」后调用，避免 Domain 依赖 AppKit。
+- **降级**：若无法取得有效 `NSWindow` 或系统拒绝激活，则仅保留通知 + 文案提示「请打开番茄钟确认下一阶段」；不阻塞计时状态机。
+- **测试**：单元测试不依赖真实窗口；可协议化 `WindowPresentation` 并在单测里断言「自然结束时被调用一次」。
+
+### 9.2 阶段流转：待确认再进入下一阶段
+
+- **Domain 调整**：在「自然结束」与「开始下一段」之间增加显式状态，例如：
+  - `runState` 扩展 **`awaitingAdvance`**（或等价命名），表示本段已结束、**未**开始下一段倒计时；**`running`** 仅表示当前段正在倒计时。
+  - 原「到点即 `acknowledgeSegmentComplete` 并写入下一段 `segmentDeadline`」拆成两步：**(A)** `completeCurrentSegmentNaturally(at:)` → 进入 `awaitingAdvance`，并确定**下一段目标阶段**（工作/短休/长休）但**不写新 deadline**；**(B)** `confirmAdvance(at:)` → 切换 `phase`、进入 `running` 并设置新 `segmentDeadline`。
+  - **跳过**：建议 **直接执行 (A)+(B)**（即跳过仍连续切换且不进入 `awaitingAdvance`），与 PRD「手动确认」仅约束自然结束一致；写入单测与验收。
+- **UI**：自然结束后主区展示「本阶段已结束」+ 主按钮 **「进入下一阶段」**（`accessibilityIdentifier` 如 `timer.confirmAdvanceButton`）；支持 **键盘默认焦点** 在该按钮上（`defaultFocus` / `@FocusState`，以 macOS 12 可用 API 为准）。
+- **通知**：自然结束时仍发通知；待确认期间**不**为下一段调度「整段结束」的定时通知，待用户确认后再调度。
+
+### 9.3 时长预设：一键切换
+
+- **Domain / 配置**：增加 **`PomodoroPreset`**（`enum` 或命名常量表），与 `PomodoroConfig` 映射如下（单位秒，与 PRD 表一致）：
+
+| 预设 | work | shortBreak | longBreak |
+|------|------|------------|-----------|
+| classic255 | 1500 | 300 | 900 |
+| fortyfive15 | 2700 | 900 | 900 |
+| fiftytwo17 | 3120 | 1020 | 1800 |
+
+- **轮次**：`pomodorosUntilLongBreak` **默认仍为 4**，切换预设**不自动改写**（与 PRD 可选策略一致）；若设置页单独保存该字段，与预设独立。
+- **UI**：主界面或设置区提供三个 **Segmented / 按钮** 一键应用；仅在 **`idle` 或 `awaitingAdvance`**（若允许在「待确认」时改参数，需明确是否重置待确认态；**默认仅 `idle` 可切换预设**）调用 `engine.updateConfig` 并 `Persistence.save`。
+- **持久化**：`UserDefaults` 增加可选键 `lastSelectedPreset`（字符串），便于下次启动恢复展示。
+
+### 9.4 测试与 CI
+
+- **单元测试**：覆盖「自然结束 → awaitingAdvance → confirm → running」「跳过不进入 awaiting」「预设应用后三段时间与上表一致」。
+- **UI 测试**：自然结束路径若难以在 CI 等时，可测「空闲时点击某预设后剩余时间变化」与「确认按钮存在并可点」（结合短时长配置或 mock，按实现取舍）。
+- **CI**：与现有一致；新增 Domain 逻辑须随 PR 通过单测。
+
+### 9.5 与旧版第 4 节的关系
+
+- 上文第 4 节「到点即 `acknowledgeSegmentComplete` 连续流转」在 v0.2 由 **9.2** 取代；实现时删除或分支旧路径，避免双行为。

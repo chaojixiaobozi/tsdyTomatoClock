@@ -71,11 +71,14 @@ FILES = [
     ("TomatoClock/Domain/PomodoroPhase.swift", "PomodoroPhase.swift"),
     ("TomatoClock/Domain/PomodoroConfig.swift", "PomodoroConfig.swift"),
     ("TomatoClock/Domain/PomodoroEngine.swift", "PomodoroEngine.swift"),
+    ("TomatoClock/Domain/PomodoroPreset.swift", "PomodoroPreset.swift"),
     ("TomatoClock/Theme/TomatoPalette.swift", "TomatoPalette.swift"),
     ("TomatoClock/Services/PomodoroPersistence.swift", "PomodoroPersistence.swift"),
     ("TomatoClock/Services/PomodoroNotificationService.swift", "PomodoroNotificationService.swift"),
+    ("TomatoClock/Services/MainWindowHolder.swift", "MainWindowHolder.swift"),
     ("TomatoClock/Features/Timer/TimerViewModel.swift", "TimerViewModel.swift"),
     ("TomatoClock/Features/Timer/TimerRootView.swift", "TimerRootView.swift"),
+    ("TomatoClock/Features/Timer/WindowBridge.swift", "WindowBridge.swift"),
     ("TomatoClock/Features/Settings/SettingsView.swift", "SettingsView.swift"),
 ]
 
@@ -106,7 +109,7 @@ lines.append("/* End PBXBuildFile section */")
 # PBXFileReference
 lines.append("\n/* Begin PBXFileReference section */")
 lines.append(
-    f"\t\t{APP_PRODUCT} /* TomatoClock.app */ = {{isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TomatoClock.app; sourceTree = BUILT_PRODUCTS_DIR; }};"
+    f"\t\t{APP_PRODUCT} /* TsdyTomatoClock.app */ = {{isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TsdyTomatoClock.app; sourceTree = BUILT_PRODUCTS_DIR; }};"
 )
 lines.append(
     f"\t\t{TEST_PRODUCT} /* TomatoClockTests.xctest */ = {{isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TomatoClockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; }};"
@@ -184,6 +187,7 @@ lines.append("\t\t\tchildren = (")
 lines.append(f"\t\t\t\t{app_pairs[1][0]},")
 lines.append(f"\t\t\t\t{app_pairs[2][0]},")
 lines.append(f"\t\t\t\t{app_pairs[3][0]},")
+lines.append(f"\t\t\t\t{app_pairs[4][0]},")
 lines.append("\t\t\t);")
 lines.append("\t\t\tpath = Domain;")
 lines.append("\t\t\tsourceTree = \"<group>\";")
@@ -192,7 +196,7 @@ lines.append("\t\t};")
 lines.append(f"\t\t{THEME} /* Theme */ = {{")
 lines.append("\t\t\tisa = PBXGroup;")
 lines.append("\t\t\tchildren = (")
-lines.append(f"\t\t\t\t{app_pairs[4][0]},")
+lines.append(f"\t\t\t\t{app_pairs[5][0]},")
 lines.append("\t\t\t);")
 lines.append("\t\t\tpath = Theme;")
 lines.append("\t\t\tsourceTree = \"<group>\";")
@@ -201,8 +205,9 @@ lines.append("\t\t};")
 lines.append(f"\t\t{SERVICES} /* Services */ = {{")
 lines.append("\t\t\tisa = PBXGroup;")
 lines.append("\t\t\tchildren = (")
-lines.append(f"\t\t\t\t{app_pairs[5][0]},")
 lines.append(f"\t\t\t\t{app_pairs[6][0]},")
+lines.append(f"\t\t\t\t{app_pairs[7][0]},")
+lines.append(f"\t\t\t\t{app_pairs[8][0]},")
 lines.append("\t\t\t);")
 lines.append("\t\t\tpath = Services;")
 lines.append("\t\t\tsourceTree = \"<group>\";")
@@ -221,8 +226,9 @@ lines.append("\t\t};")
 lines.append(f"\t\t{TIMERF} /* Timer */ = {{")
 lines.append("\t\t\tisa = PBXGroup;")
 lines.append("\t\t\tchildren = (")
-lines.append(f"\t\t\t\t{app_pairs[7][0]},")
-lines.append(f"\t\t\t\t{app_pairs[8][0]},")
+lines.append(f"\t\t\t\t{app_pairs[9][0]},")
+lines.append(f"\t\t\t\t{app_pairs[10][0]},")
+lines.append(f"\t\t\t\t{app_pairs[11][0]},")
 lines.append("\t\t\t);")
 lines.append("\t\t\tpath = Timer;")
 lines.append("\t\t\tsourceTree = \"<group>\";")
@@ -231,7 +237,7 @@ lines.append("\t\t};")
 lines.append(f"\t\t{SETTINGSF} /* Settings */ = {{")
 lines.append("\t\t\tisa = PBXGroup;")
 lines.append("\t\t\tchildren = (")
-lines.append(f"\t\t\t\t{app_pairs[9][0]},")
+lines.append(f"\t\t\t\t{app_pairs[12][0]},")
 lines.append("\t\t\t);")
 lines.append("\t\t\tpath = Settings;")
 lines.append("\t\t\tsourceTree = \"<group>\";")
@@ -273,7 +279,7 @@ lines.append("\t\t\tdependencies = (")
 lines.append("\t\t\t);")
 lines.append("\t\t\tname = TomatoClock;")
 lines.append("\t\t\tproductName = TomatoClock;")
-lines.append(f"\t\t\tproductReference = {APP_PRODUCT} /* TomatoClock.app */;")
+lines.append(f"\t\t\tproductReference = {APP_PRODUCT} /* TsdyTomatoClock.app */;")
 lines.append("\t\t\tproductType = \"com.apple.product-type.application\";")
 lines.append("\t\t};")
 
@@ -451,6 +457,7 @@ def cfg_app(cid: str, debug: bool) -> None:
     else:
         lines.append("\t\t\t\tSWIFT_COMPILATION_MODE = wholemodule;")
         lines.append("\t\t\t\tSWIFT_OPTIMIZATION_LEVEL = \"-O\";")
+    lines.append("\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;")
     lines.append("\t\t\t\tASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;")
     lines.append("\t\t\t\tCODE_SIGN_ENTITLEMENTS = TomatoClock/TomatoClock.entitlements;")
     lines.append('\t\t\t\t"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";')
@@ -460,6 +467,8 @@ def cfg_app(cid: str, debug: bool) -> None:
     lines.append("\t\t\t\tENABLE_HARDENED_RUNTIME = YES;")
     lines.append("\t\t\t\tENABLE_PREVIEWS = YES;")
     lines.append("\t\t\t\tGENERATE_INFOPLIST_FILE = YES;")
+    lines.append("\t\t\t\tINFOPLIST_KEY_CFBundleIconName = AppIcon;")
+    lines.append("\t\t\t\tINFOPLIST_KEY_CFBundleDisplayName = TsdyTomatoClock;")
     lines.append(
         '\t\t\t\tINFOPLIST_KEY_NSUserNotificationUsageDescription = "番茄钟在阶段结束时发送本地通知。";'
     )
@@ -469,7 +478,8 @@ def cfg_app(cid: str, debug: bool) -> None:
     lines.append("\t\t\t\t\t\"@executable_path/../Frameworks\",")
     lines.append("\t\t\t\t);")
     lines.append("\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.tsdy.TomatoClock;")
-    lines.append("\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";")
+    lines.append("\t\t\t\tPRODUCT_MODULE_NAME = TomatoClock;")
+    lines.append("\t\t\t\tPRODUCT_NAME = TsdyTomatoClock;")
     lines.append("\t\t\t};")
     lines.append(f"\t\t\tname = {'Debug' if debug else 'Release'};")
     lines.append("\t\t};")
@@ -501,7 +511,7 @@ def cfg_test(cid: str, debug: bool) -> None:
     lines.append("\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";")
     lines.append("\t\t\t\tSWIFT_EMIT_LOC_STRINGS = NO;")
     lines.append(
-        '\t\t\t\tTEST_HOST = "$(BUILT_PRODUCTS_DIR)/TomatoClock.app/Contents/MacOS/TomatoClock";'
+        '\t\t\t\tTEST_HOST = "$(BUILT_PRODUCTS_DIR)/TsdyTomatoClock.app/Contents/MacOS/TsdyTomatoClock";'
     )
     lines.append("\t\t\t};")
     lines.append(f"\t\t\tname = {'Debug' if debug else 'Release'};")

@@ -1,0 +1,15 @@
+.DS_Store
+.build/
+.swiftpm/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+dist/
+
+# 本地 xcodebuild 使用 -derivedDataPath 等产生的临时目录（勿提交）
+.build_cli/
+.build_run/
+.build_iconcheck/
+
+# Xcode 测试结果包（若在仓库根目录生成）
+*.xcresult

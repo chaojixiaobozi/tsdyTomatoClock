@@ -10,30 +10,38 @@
 		336499E9E593A8101CFABDA4 /* PomodoroPhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23ADFC62D42241D65EFCFA83; };
 		F3A185991246A6537B1E327A /* PomodoroConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E33C31219C6D0BC4EF62C3; };
 		1723E0729706F7A515DF2E73 /* PomodoroEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451299F956DB0E20F43F06F3; };
+		F100D01E0000000000000002 /* PomodoroPreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100D01E0000000000000001; };
+		F100D01E0000000000000004 /* MainWindowHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100D01E0000000000000003; };
+		F100D01E0000000000000006 /* WindowBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100D01E0000000000000005; };
 		CA8BD1E766B7ACC1DDA884AB /* TomatoPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7DC66EF4922EA839B7BCACD; };
 		370D9CCD2B0D68F9D6489305 /* PomodoroPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E683E5C3CF78C03738B8F1; };
 		4C2E530031214FF73A6FB569 /* PomodoroNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66715D2042023D0E0D7CE461; };
 		00DACA3555E7AAFBEFD22972 /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FD610271B4822BD33149EA; };
 		5AC44FF68E7DD0708226AED9 /* TimerRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA6659E3FF6B9567CCD68E6; };
 		D8E3C05A9886AAB4FC130A93 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8CEC9D60C802D0BFE19757; };
+		F100D01E0000000000000101 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F100D01E0000000000000100; };
 		4DA9B6A6A5352E6E0EABE23E /* PomodoroEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6FF70222EE941B3534BB5B1; };
 		A4DDBEBEA53223C60752DC17 /* TomatoClockUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F25133916A6A2270471D321; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		74107CAF9CE68C4ADE47780F /* TomatoClock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TomatoClock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		74107CAF9CE68C4ADE47780F /* TsdyTomatoClock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TsdyTomatoClock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8919A0EB51BACA06B72B450B /* TomatoClockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TomatoClockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1A4F7737CA601935A5E778C /* TomatoClockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TomatoClockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF6B6BF6E73AC0DBCD80840F /* TomatoClockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TomatoClockApp.swift"; sourceTree = "<group>"; };
 		23ADFC62D42241D65EFCFA83 /* PomodoroPhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PomodoroPhase.swift"; sourceTree = "<group>"; };
 		E1E33C31219C6D0BC4EF62C3 /* PomodoroConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PomodoroConfig.swift"; sourceTree = "<group>"; };
 		451299F956DB0E20F43F06F3 /* PomodoroEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PomodoroEngine.swift"; sourceTree = "<group>"; };
+		F100D01E0000000000000001 /* PomodoroPreset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PomodoroPreset.swift"; sourceTree = "<group>"; };
 		F7DC66EF4922EA839B7BCACD /* TomatoPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TomatoPalette.swift"; sourceTree = "<group>"; };
 		11E683E5C3CF78C03738B8F1 /* PomodoroPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PomodoroPersistence.swift"; sourceTree = "<group>"; };
 		66715D2042023D0E0D7CE461 /* PomodoroNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PomodoroNotificationService.swift"; sourceTree = "<group>"; };
+		F100D01E0000000000000003 /* MainWindowHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainWindowHolder.swift"; sourceTree = "<group>"; };
 		91FD610271B4822BD33149EA /* TimerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimerViewModel.swift"; sourceTree = "<group>"; };
 		ADA6659E3FF6B9567CCD68E6 /* TimerRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimerRootView.swift"; sourceTree = "<group>"; };
+		F100D01E0000000000000005 /* WindowBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WindowBridge.swift"; sourceTree = "<group>"; };
 		CE8CEC9D60C802D0BFE19757 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView.swift"; sourceTree = "<group>"; };
+		F100D01E0000000000000100 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		33EC8D8E2DA3FA6848BAAD33 /* TomatoClock.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TomatoClock.entitlements; sourceTree = "<group>"; };
 		F6FF70222EE941B3534BB5B1 /* PomodoroEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroEngineTests.swift; sourceTree = "<group>"; };
 		3F25133916A6A2270471D321 /* TomatoClockUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TomatoClockUITests.swift; sourceTree = "<group>"; };
@@ -73,6 +81,7 @@
 		AD8AD7EE916F7E52ACAA3728 /* TomatoClock */ = {
 			isa = PBXGroup;
 			children = (
+				F100D01E0000000000000100,
 				DF6B6BF6E73AC0DBCD80840F,
 				33EC8D8E2DA3FA6848BAAD33,
 				282960D5670EA41C7BDEF453,
@@ -89,6 +98,7 @@
 				23ADFC62D42241D65EFCFA83,
 				E1E33C31219C6D0BC4EF62C3,
 				451299F956DB0E20F43F06F3,
+				F100D01E0000000000000001,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -106,6 +116,7 @@
 			children = (
 				11E683E5C3CF78C03738B8F1,
 				66715D2042023D0E0D7CE461,
+				F100D01E0000000000000003,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -124,6 +135,7 @@
 			children = (
 				91FD610271B4822BD33149EA,
 				ADA6659E3FF6B9567CCD68E6,
+				F100D01E0000000000000005,
 			);
 			path = Timer;
 			sourceTree = "<group>";
@@ -169,7 +181,7 @@
 			);
 			name = TomatoClock;
 			productName = TomatoClock;
-			productReference = 74107CAF9CE68C4ADE47780F /* TomatoClock.app */;
+			productReference = 74107CAF9CE68C4ADE47780F /* TsdyTomatoClock.app */;
 			productType = "com.apple.product-type.application";
 		};
 		C5B60781D3C33146D8E89320 /* TomatoClockTests */ = {
@@ -252,6 +264,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F100D01E0000000000000101 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,11 +279,14 @@
 				336499E9E593A8101CFABDA4 /* PomodoroPhase.swift in Sources */,
 				F3A185991246A6537B1E327A /* PomodoroConfig.swift in Sources */,
 				1723E0729706F7A515DF2E73 /* PomodoroEngine.swift in Sources */,
+				F100D01E0000000000000002 /* PomodoroPreset.swift in Sources */,
 				CA8BD1E766B7ACC1DDA884AB /* TomatoPalette.swift in Sources */,
 				370D9CCD2B0D68F9D6489305 /* PomodoroPersistence.swift in Sources */,
 				4C2E530031214FF73A6FB569 /* PomodoroNotificationService.swift in Sources */,
+				F100D01E0000000000000004 /* MainWindowHolder.swift in Sources */,
 				00DACA3555E7AAFBEFD22972 /* TimerViewModel.swift in Sources */,
 				5AC44FF68E7DD0708226AED9 /* TimerRootView.swift in Sources */,
+				F100D01E0000000000000006 /* WindowBridge.swift in Sources */,
 				D8E3C05A9886AAB4FC130A93 /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -337,6 +353,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				ENABLE_TESTABILITY = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = TomatoClock/TomatoClock.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
@@ -346,6 +363,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleIconName = AppIcon;
+				INFOPLIST_KEY_CFBundleDisplayName = TsdyTomatoClock;
 				INFOPLIST_KEY_NSUserNotificationUsageDescription = "番茄钟在阶段结束时发送本地通知。";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -353,7 +372,8 @@
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tsdy.TomatoClock;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = TomatoClock;
+				PRODUCT_NAME = TsdyTomatoClock;
 			};
 			name = Debug;
 		};
@@ -367,6 +387,7 @@
 				SWIFT_VERSION = 5.0;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_ENTITLEMENTS = TomatoClock/TomatoClock.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
@@ -376,6 +397,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleIconName = AppIcon;
+				INFOPLIST_KEY_CFBundleDisplayName = TsdyTomatoClock;
 				INFOPLIST_KEY_NSUserNotificationUsageDescription = "番茄钟在阶段结束时发送本地通知。";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -383,7 +406,8 @@
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tsdy.TomatoClock;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_MODULE_NAME = TomatoClock;
+				PRODUCT_NAME = TsdyTomatoClock;
 			};
 			name = Release;
 		};
@@ -411,7 +435,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tsdy.TomatoClockTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TomatoClock.app/Contents/MacOS/TomatoClock";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TsdyTomatoClock.app/Contents/MacOS/TsdyTomatoClock";
 			};
 			name = Debug;
 		};
@@ -438,7 +462,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.tsdy.TomatoClockTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TomatoClock.app/Contents/MacOS/TomatoClock";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TsdyTomatoClock.app/Contents/MacOS/TsdyTomatoClock";
 			};
 			name = Release;
 		};

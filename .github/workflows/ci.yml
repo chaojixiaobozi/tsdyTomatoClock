@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 逻辑单测在无人值守 CI 上稳定；UI 测试依赖本机「自动化/辅助功能」授权，请在本地执行 scripts/run-tests.sh 跑全量。
+      - name: Run unit tests (XCTest)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project TomatoClock.xcodeproj \
+            -scheme TomatoClock \
+            -destination 'platform=macOS' \
+            -only-testing:TomatoClockTests \
+            test

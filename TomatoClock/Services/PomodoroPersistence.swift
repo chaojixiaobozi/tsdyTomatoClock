@@ -8,6 +8,7 @@ public struct PomodoroPersistence: Sendable {
     private let keyConfig = "pomodoro.config.v1"
     private let keyDay = "pomodoro.calendarDay.v1"
     private let keyTodayCount = "pomodoro.todayCount.v1"
+    private let keyLastPreset = "pomodoro.lastPreset.v1"
 
     public init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -31,12 +32,20 @@ public struct PomodoroPersistence: Sendable {
         return decoded
     }
 
-    public func save(config: PomodoroConfig, calendarDay: String, todayCount: Int) {
+    public func loadLastPreset() -> PomodoroPreset? {
+        guard let raw = defaults.string(forKey: keyLastPreset) else { return nil }
+        return PomodoroPreset(rawValue: raw)
+    }
+
+    public func save(config: PomodoroConfig, calendarDay: String, todayCount: Int, lastPreset: PomodoroPreset? = nil) {
         if let data = try? JSONEncoder().encode(config) {
             defaults.set(data, forKey: keyConfig)
         }
         defaults.set(calendarDay, forKey: keyDay)
         defaults.set(todayCount, forKey: keyTodayCount)
+        if let lastPreset {
+            defaults.set(lastPreset.rawValue, forKey: keyLastPreset)
+        }
     }
 
     public static func todayString(for date: Date = Date(), calendar: Calendar = .current) -> String {

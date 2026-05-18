@@ -6,8 +6,11 @@ struct TimerRootView: View {
 
     var body: some View {
         ZStack {
-            TomatoPalette.background(for: viewModel.engine.phase, runState: viewModel.engine.runState)
-                .ignoresSafeArea()
+            TomatoPalette.background(
+                for: viewModel.engine.phase,
+                runState: displayRunState
+            )
+            .ignoresSafeArea()
 
             if viewModel.engine.runState == .paused {
                 TomatoPalette.pausedOverlay
@@ -25,6 +28,11 @@ struct TimerRootView: View {
             }
             .padding(28)
         }
+        .overlay(
+            WindowBridge()
+                .frame(width: 1, height: 1)
+                .allowsHitTesting(false)
+        )
         .frame(minWidth: 360, minHeight: 420)
         .sheet(isPresented: $showSettings) {
             SettingsView(viewModel: viewModel)
@@ -34,23 +42,33 @@ struct TimerRootView: View {
         }
     }
 
+    /// 待确认时用「空闲」级渐变强度，避免与暂停蒙层叠加语义冲突。
+    private var displayRunState: SessionRunState {
+        switch viewModel.engine.runState {
+        case .awaitingAdvance: return .idle
+        default: return viewModel.engine.runState
+        }
+    }
+
     private var header: some View {
         HStack {
-            Text("番茄钟")
+            Text("TsdyTomatoClock")
                 .font(.title2.weight(.semibold))
                 .foregroundStyle(.primary)
             Spacer()
             Button("设置") {
                 showSettings = true
             }
+            .buttonStyle(TomatoTimerSecondaryButtonStyle(phase: viewModel.engine.phase, enabled: true))
             .accessibilityIdentifier("timer.settingsButton")
         }
     }
 
     private var phaseLabel: some View {
-        Text(viewModel.engine.phase.displayTitle)
+        Text(viewModel.phaseHeadline())
             .font(.title3)
             .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
             .accessibilityIdentifier("timer.phaseLabel")
     }
 
@@ -72,8 +90,13 @@ struct TimerRootView: View {
         }
     }
 
+    private var secondaryActionEnabled: Bool {
+        viewModel.engine.runState != .idle
+    }
+
     private var controls: some View {
-        VStack(spacing: 12) {
+        let phase = viewModel.engine.phase
+        return VStack(spacing: 12) {
             if viewModel.notificationDenied {
                 Text("未开启通知权限，阶段结束时可能收不到系统提醒。可在「系统设置 → 通知」中开启。")
                     .font(.footnote)
@@ -82,30 +105,51 @@ struct TimerRootView: View {
                     .accessibilityIdentifier("timer.notificationHint")
             }
 
-            HStack(spacing: 12) {
-                Button(viewModel.engine.runState == .running ? "暂停" : (viewModel.engine.runState == .paused ? "继续" : "开始")) {
-                    if viewModel.engine.runState == .idle {
-                        viewModel.start()
-                    } else {
-                        viewModel.togglePauseResume()
+            if viewModel.engine.runState == .awaitingAdvance {
+                VStack(spacing: 10) {
+                    Button("进入下一阶段") {
+                        viewModel.confirmAdvance()
                     }
-                }
-                .keyboardShortcut(.space, modifiers: [])
-                .buttonStyle(.borderedProminent)
-                .tint(TomatoPalette.workAccent)
-                .accessibilityIdentifier("timer.startPauseButton")
+                    .buttonStyle(TomatoTimerPrimaryButtonStyle(phase: phase, large: true))
+                    .accessibilityIdentifier("timer.confirmAdvanceButton")
 
-                Button("跳过") {
-                    viewModel.skip()
+                    Button("重置本轮") {
+                        viewModel.showResetConfirm = true
+                    }
+                    .buttonStyle(TomatoTimerSecondaryButtonStyle(phase: phase, enabled: true))
+                    .accessibilityIdentifier("timer.resetButtonAwaiting")
                 }
-                .disabled(viewModel.engine.runState == .idle)
-                .accessibilityIdentifier("timer.skipButton")
+            } else {
+                HStack(spacing: 12) {
+                    Button(
+                        viewModel.engine.runState == .running
+                            ? "暂停"
+                            : (viewModel.engine.runState == .paused ? "继续" : "开始")
+                    ) {
+                        if viewModel.engine.runState == .idle {
+                            viewModel.start()
+                        } else {
+                            viewModel.togglePauseResume()
+                        }
+                    }
+                    .keyboardShortcut(.space, modifiers: [])
+                    .buttonStyle(TomatoTimerPrimaryButtonStyle(phase: phase, large: false))
+                    .accessibilityIdentifier("timer.startPauseButton")
 
-                Button("重置本轮") {
-                    viewModel.showResetConfirm = true
+                    Button("跳过") {
+                        viewModel.skip()
+                    }
+                    .disabled(!secondaryActionEnabled)
+                    .buttonStyle(TomatoTimerSecondaryButtonStyle(phase: phase, enabled: secondaryActionEnabled))
+                    .accessibilityIdentifier("timer.skipButton")
+
+                    Button("重置本轮") {
+                        viewModel.showResetConfirm = true
+                    }
+                    .disabled(!secondaryActionEnabled)
+                    .buttonStyle(TomatoTimerSecondaryButtonStyle(phase: phase, enabled: secondaryActionEnabled))
+                    .accessibilityIdentifier("timer.resetButton")
                 }
-                .disabled(viewModel.engine.runState == .idle)
-                .accessibilityIdentifier("timer.resetButton")
             }
         }
         .confirmationDialog("确定重置本轮？", isPresented: $viewModel.showResetConfirm, titleVisibility: .visible) {
@@ -114,5 +158,45 @@ struct TimerRootView: View {
             }
             Button("取消", role: .cancel) {}
         }
+    }
+}
+
+private struct TomatoTimerPrimaryButtonStyle: ButtonStyle {
+    let phase: PomodoroPhase
+    var large: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.semibold))
+            .foregroundColor(TomatoPalette.timerPrimaryLabel(for: phase))
+            .padding(.horizontal, large ? 22 : 16)
+            .padding(.vertical, large ? 11 : 8)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(TomatoPalette.timerPrimaryFill(for: phase))
+            )
+            .opacity(configuration.isPressed ? 0.88 : 1)
+    }
+}
+
+private struct TomatoTimerSecondaryButtonStyle: ButtonStyle {
+    let phase: PomodoroPhase
+    var enabled: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body)
+            .foregroundColor(Color.primary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 7)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(TomatoPalette.timerSecondaryFill)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(TomatoPalette.timerSecondaryStroke(for: phase), lineWidth: 1)
+            )
+            .opacity(enabled ? (configuration.isPressed ? 0.88 : 1) : 0.42)
     }
 }

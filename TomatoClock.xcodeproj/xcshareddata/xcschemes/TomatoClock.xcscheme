@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "D277EB9408067DA3143E0625"
-               BuildableName = "TomatoClock.app"
+               BuildableName = "TsdyTomatoClock.app"
                BlueprintName = "TomatoClock"
                ReferencedContainer = "container:TomatoClock.xcodeproj">
             </BuildableReference>
@@ -68,7 +68,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D277EB9408067DA3143E0625"
-            BuildableName = "TomatoClock.app"
+            BuildableName = "TsdyTomatoClock.app"
             BlueprintName = "TomatoClock"
             ReferencedContainer = "container:TomatoClock.xcodeproj">
          </BuildableReference>
@@ -85,7 +85,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "D277EB9408067DA3143E0625"
-            BuildableName = "TomatoClock.app"
+            BuildableName = "TsdyTomatoClock.app"
             BlueprintName = "TomatoClock"
             ReferencedContainer = "container:TomatoClock.xcodeproj">
          </BuildableReference>
