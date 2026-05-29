@@ -195,36 +195,3 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - 顶栏按钮（显式配色，避免系统 toolbar 与番茄色脱节）
-
-private struct SettingsChromePrimaryButtonStyle: ButtonStyle {
-    var enabled: Bool
-
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.body.weight(.semibold))
-            .foregroundColor(.white)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 6)
-            .background(
-                Capsule()
-                    .fill(enabled ? TomatoPalette.workAccent : Color.white.opacity(0.22))
-            )
-            .opacity(configuration.isPressed && enabled ? 0.85 : 1)
-    }
-}
-
-private struct SettingsChromeSecondaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.body)
-            .foregroundColor(.white.opacity(0.92))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(
-                Capsule()
-                    .strokeBorder(Color.white.opacity(0.38), lineWidth: 1)
-            )
-            .opacity(configuration.isPressed ? 0.8 : 1)
-    }
-}

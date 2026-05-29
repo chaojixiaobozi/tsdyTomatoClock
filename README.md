@@ -34,7 +34,13 @@ bash scripts/run-tests.sh
 xcodebuild -project TomatoClock.xcodeproj -scheme TomatoClock -destination 'platform=macOS' test
 ```
 
-**本地 Debug 构建并启动**（示例：固定 DerivedData 路径便于找到 `.app`）：
+**本地 Debug 构建并启动**（推荐单行，避免换行符 `\` 后误加空格导致 `Unknown build action ' '`）：
+
+```bash
+xcodebuild -project TomatoClock.xcodeproj -scheme TomatoClock -configuration Debug -destination 'platform=macOS' -derivedDataPath ./.build_cli build && open ./.build_cli/Build/Products/Debug/TsdyTomatoClock.app
+```
+
+若需多行书写，**反斜杠 `\` 后不能有空格**，必须紧接换行：
 
 ```bash
 xcodebuild -project TomatoClock.xcodeproj -scheme TomatoClock -configuration Debug \

@@ -19,8 +19,13 @@
 		00DACA3555E7AAFBEFD22972 /* TimerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91FD610271B4822BD33149EA; };
 		5AC44FF68E7DD0708226AED9 /* TimerRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA6659E3FF6B9567CCD68E6; };
 		D8E3C05A9886AAB4FC130A93 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8CEC9D60C802D0BFE19757; };
+		F100D01E0000000000000202 /* HistoryMonthGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100D01E0000000000000201; };
+		F100D01E0000000000000204 /* HistoryCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100D01E0000000000000203; };
+		F100D01E0000000000000210 /* SettingsChromeButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100D01E000000000000020F; };
 		F100D01E0000000000000101 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F100D01E0000000000000100; };
 		4DA9B6A6A5352E6E0EABE23E /* PomodoroEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6FF70222EE941B3534BB5B1; };
+		F100D01E0000000000000206 /* PomodoroPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100D01E0000000000000205; };
+		F100D01E0000000000000208 /* HistoryMonthGridTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F100D01E0000000000000207; };
 		A4DDBEBEA53223C60752DC17 /* TomatoClockUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F25133916A6A2270471D321; };
 /* End PBXBuildFile section */
 
@@ -41,9 +46,14 @@
 		ADA6659E3FF6B9567CCD68E6 /* TimerRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimerRootView.swift"; sourceTree = "<group>"; };
 		F100D01E0000000000000005 /* WindowBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WindowBridge.swift"; sourceTree = "<group>"; };
 		CE8CEC9D60C802D0BFE19757 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsView.swift"; sourceTree = "<group>"; };
+		F100D01E0000000000000201 /* HistoryMonthGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HistoryMonthGrid.swift"; sourceTree = "<group>"; };
+		F100D01E0000000000000203 /* HistoryCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HistoryCalendarView.swift"; sourceTree = "<group>"; };
+		F100D01E000000000000020F /* SettingsChromeButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsChromeButtonStyles.swift"; sourceTree = "<group>"; };
 		F100D01E0000000000000100 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		33EC8D8E2DA3FA6848BAAD33 /* TomatoClock.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TomatoClock.entitlements; sourceTree = "<group>"; };
 		F6FF70222EE941B3534BB5B1 /* PomodoroEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroEngineTests.swift; sourceTree = "<group>"; };
+		F100D01E0000000000000205 /* PomodoroPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroPersistenceTests.swift; sourceTree = "<group>"; };
+		F100D01E0000000000000207 /* HistoryMonthGridTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryMonthGridTests.swift; sourceTree = "<group>"; };
 		3F25133916A6A2270471D321 /* TomatoClockUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TomatoClockUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -107,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				F7DC66EF4922EA839B7BCACD,
+				F100D01E000000000000020F,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -125,9 +136,19 @@
 			isa = PBXGroup;
 			children = (
 				DAE28DAB90B488A375588575,
+				F100D01E0000000000000200,
 				F12C4364398C1483DDCB1A9B,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		F100D01E0000000000000200 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				F100D01E0000000000000201,
+				F100D01E0000000000000203,
+			);
+			path = History;
 			sourceTree = "<group>";
 		};
 		DAE28DAB90B488A375588575 /* Timer */ = {
@@ -152,6 +173,8 @@
 			isa = PBXGroup;
 			children = (
 				F6FF70222EE941B3534BB5B1,
+				F100D01E0000000000000205,
+				F100D01E0000000000000207,
 			);
 			path = TomatoClockTests;
 			sourceTree = "<group>";
@@ -288,6 +311,9 @@
 				5AC44FF68E7DD0708226AED9 /* TimerRootView.swift in Sources */,
 				F100D01E0000000000000006 /* WindowBridge.swift in Sources */,
 				D8E3C05A9886AAB4FC130A93 /* SettingsView.swift in Sources */,
+				F100D01E0000000000000202 /* HistoryMonthGrid.swift in Sources */,
+				F100D01E0000000000000204 /* HistoryCalendarView.swift in Sources */,
+				F100D01E0000000000000210 /* SettingsChromeButtonStyles.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +322,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4DA9B6A6A5352E6E0EABE23E /* PomodoroEngineTests.swift in Sources */,
+				F100D01E0000000000000206 /* PomodoroPersistenceTests.swift in Sources */,
+				F100D01E0000000000000208 /* HistoryMonthGridTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

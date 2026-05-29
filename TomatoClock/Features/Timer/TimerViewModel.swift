@@ -45,6 +45,14 @@ final class TimerViewModel: ObservableObject {
         let day = PomodoroPersistence.todayString()
         let previous = engine
         var e = engine
+
+        if day != previous.currentCalendarDay {
+            persistence.archiveDayIfNeeded(
+                storedDay: previous.currentCalendarDay,
+                count: previous.todayCompletedPomodoros
+            )
+        }
+
         e.rolloverCalendarDayIfNeeded(calendarDay: day)
         let rolled = e.currentCalendarDay != previous.currentCalendarDay
 
@@ -163,6 +171,14 @@ final class TimerViewModel: ObservableObject {
             calendarDay: engine.currentCalendarDay,
             todayCount: engine.todayCompletedPomodoros,
             lastPreset: lastAppliedPreset
+        )
+    }
+
+    func dailyHistorySnapshot() -> (todayDay: String, todayCount: Int, history: [String: Int]) {
+        (
+            engine.currentCalendarDay,
+            engine.todayCompletedPomodoros,
+            persistence.loadDailyHistory()
         )
     }
 

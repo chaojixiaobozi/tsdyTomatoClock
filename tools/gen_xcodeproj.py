@@ -26,6 +26,7 @@ SERVICES = uid()
 FEATURES = uid()
 TIMERF = uid()
 SETTINGSF = uid()
+HISTORYF = uid()
 
 APP_TARGET = uid()
 TEST_TARGET = uid()
@@ -73,6 +74,7 @@ FILES = [
     ("TomatoClock/Domain/PomodoroEngine.swift", "PomodoroEngine.swift"),
     ("TomatoClock/Domain/PomodoroPreset.swift", "PomodoroPreset.swift"),
     ("TomatoClock/Theme/TomatoPalette.swift", "TomatoPalette.swift"),
+    ("TomatoClock/Theme/SettingsChromeButtonStyles.swift", "SettingsChromeButtonStyles.swift"),
     ("TomatoClock/Services/PomodoroPersistence.swift", "PomodoroPersistence.swift"),
     ("TomatoClock/Services/PomodoroNotificationService.swift", "PomodoroNotificationService.swift"),
     ("TomatoClock/Services/MainWindowHolder.swift", "MainWindowHolder.swift"),
@@ -80,6 +82,14 @@ FILES = [
     ("TomatoClock/Features/Timer/TimerRootView.swift", "TimerRootView.swift"),
     ("TomatoClock/Features/Timer/WindowBridge.swift", "WindowBridge.swift"),
     ("TomatoClock/Features/Settings/SettingsView.swift", "SettingsView.swift"),
+    ("TomatoClock/Features/History/HistoryMonthGrid.swift", "HistoryMonthGrid.swift"),
+    ("TomatoClock/Features/History/HistoryCalendarView.swift", "HistoryCalendarView.swift"),
+]
+
+TEST_FILES = [
+    ("TomatoClockTests/PomodoroEngineTests.swift", "PomodoroEngineTests.swift"),
+    ("TomatoClockTests/PomodoroPersistenceTests.swift", "PomodoroPersistenceTests.swift"),
+    ("TomatoClockTests/HistoryMonthGridTests.swift", "HistoryMonthGridTests.swift"),
 ]
 
 app_pairs = []
@@ -101,6 +111,11 @@ for fr, bf, name in app_pairs:
 lines.append(
     f"\t\t{TEST_BUILD} /* PomodoroEngineTests.swift in Sources */ = {{isa = PBXBuildFile; fileRef = {TEST_FILE_REF}; }};"
 )
+test_pairs = []
+for _, name in TEST_FILES[1:]:
+    test_pairs.append((uid(), uid(), name))
+for fr, bf, name in test_pairs:
+    lines.append(f"\t\t{bf} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {fr}; }};")
 lines.append(
     f"\t\t{UI_BUILD} /* TomatoClockUITests.swift in Sources */ = {{isa = PBXBuildFile; fileRef = {UI_FILE_REF}; }};"
 )

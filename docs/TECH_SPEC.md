@@ -1,6 +1,6 @@
 # Mac 番茄钟 — 技术方案（简版）
 
-> 依据 `PRD.md`（含 **v0.2** 第 9 节）；目标：**实现简单、界面简洁、番茄色系、自动化测试保障交付**。
+> 依据 `PRD.md`（含 **v0.2** 第 9 节、**v0.3** 第 10 节）；目标：**实现简单、界面简洁、番茄色系、自动化测试保障交付**。
 
 ---
 
@@ -11,7 +11,7 @@
 | 语言 / UI | **Swift 5 + SwiftUI** | 单工程、与系统窗口/通知/深浅色集成成本最低，符合 PRD「原生级体验」。 |
 | 最低系统 | **macOS 12（Monterey）+** | 与 PRD 一致；Intel / Apple Silicon 通用 arm64 + x86_64。 |
 | 计时实现 | **单调时钟** | `Date` / `CFAbsoluteTimeGetCurrent()` 记录「阶段结束时刻」与暂停偏移；避免纯 `Timer` 累加导致可见漂移。 |
-| 本地存储 | **UserDefaults**（或 App Group 预留） | 仅存：当日完成番茄数、用户可调参数（工作/短休/长休/每几轮长休）；满足 MVP，无复杂 DB。 |
+| 本地存储 | **UserDefaults**（或 App Group 预留） | 配置、当日完成数、**按日历史字典**（`YYYY-MM-DD` → 完成数）；无复杂 DB。 |
 | 通知 | **UserNotifications** | 阶段结束发本地通知；权限被拒时在界面展示引导文案（验收项）。 |
 | 分发 | **一期：本地 Archive / DMG** | 签名与公证在对外分发前再补；技术栈不阻碍后续上架 Mac App Store。 |
 
@@ -71,7 +71,7 @@ TomatoClockApp
 ### 5.1 逻辑单元测试（XCTest）
 
 - **Target**：`TomatoClockTests`（依赖 Domain，不启动 App）。
-- **内容**：状态机迁移表、暂停/继续时间、跳过与重置、当日计数边界（跨日可一期简化为「进程内当日」或单测 mock 日期）。
+- **内容**：状态机迁移表、暂停/继续时间、跳过与重置、当日计数边界、**跨日写入历史 / 历史读取**（单测 mock 日期与 `Calendar`）。
 - **本地**：Xcode `⌘U` 或 `xcodebuild test`。
 - **CI**：GitHub Actions（`macos-12` 或更高 runner）执行：
 
@@ -84,7 +84,7 @@ xcodebuild -scheme TomatoClock -destination 'platform=macOS' test
 ### 5.2 UI 测试（XCUITest）
 
 - **Target**：`TomatoClockUITests`。
-- **可测点**：启动后主界面存在、默认剩余时间展示、开始/暂停按钮可点、（可选）打开设置后保存参数回到主页仍可读。
+- **可测点**：启动后主界面存在、默认剩余时间展示、开始/暂停按钮可点、（可选）打开设置后保存参数回到主页仍可读；**v0.3**：历史按钮在设置左侧、月历 sheet 可开、月份切换控件存在。
 - **稳定性**：为关键控件设置 **`accessibilityIdentifier`**，避免依赖文案随语言变化。
 - **CI**：与逻辑测试同一 `xcodebuild test` 命令跑完两个 Target；不依赖真机。
 
@@ -101,6 +101,7 @@ xcodebuild -scheme TomatoClock -destination 'platform=macOS' test
 TomatoClock/
 ├── App/
 ├── Features/Timer/          # 主界面
+├── Features/History/        # 月历历史（v0.3）
 ├── Features/Settings/       # 极简设置
 ├── Domain/                  # 状态机 + 时间计算
 ├── Services/
@@ -117,6 +118,7 @@ TomatoClock/
 | 25/5/15、轮次、控制按钮 | Domain + SwiftUI |
 | 系统通知 | `UNUserNotificationCenter` |
 | 极简会话记录 | UserDefaults + 主界面展示 |
+| 按天历史（v0.3） | `PomodoroPersistence` 日字典 + `Features/History` 月历 |
 | 浅色/深色 | Asset 颜色 + 系统语义色 |
 | 计时误差 | 结束时刻模型 + 单调时间 |
 | 无障碍 / 键盘 | SwiftUI 默认焦点链 + 主要按钮可 Tab |
@@ -129,6 +131,7 @@ TomatoClock/
 |------|------|------|
 | 0.1 | 2026-05-18 | 初稿：简架构、SwiftUI、番茄色与双测策略 |
 | 0.2 | 2026-05-19 | 追加：阶段结束前置窗口、待确认流转、时长预设（见第 9 节） |
+| 0.3 | 2026-05-29 | 追加：按天番茄完成数历史、月历视图（见第 10 节） |
 
 ---
 
@@ -175,3 +178,95 @@ TomatoClock/
 ### 9.5 与旧版第 4 节的关系
 
 - 上文第 4 节「到点即 `acknowledgeSegmentComplete` 连续流转」在 v0.2 由 **9.2** 取代；实现时删除或分支旧路径，避免双行为。
+
+---
+
+## 10. v0.3 技术落点（对齐 PRD 第 10 节）
+
+本节为 **v0.3** 实现说明；与上文冲突时以本节为准。
+
+### 10.1 数据模型与持久化
+
+- **日键**：沿用 `PomodoroPersistence.todayString(for:calendar:)` 的 **`YYYY-MM-DD`** 字符串，时区取 **`Calendar.current`**（与系统日历日一致）。
+- **历史存储**：`UserDefaults` 新增键 **`pomodoro.dailyHistory.v1`**，值为 JSON 编码的 **`[String: Int]`**（日字符串 → 当日完成番茄数）。仅本地读写，无网络。
+- **与现有键的关系**（保留 v0.1/v0.2 启动路径，避免大改）：
+  - 仍保留 **`pomodoro.calendarDay.v1`** + **`pomodoro.todayCount.v1`** 作为「当前自然日」的快速读写；
+  - 每次 **`save(...)`** 时同步更新历史字典中 **`calendarDay`** 对应条目为 **`todayCount`**；
+  - **`loadBootstrap`** 逻辑不变：存储日与请求日不一致时返回计数 0。
+- **跨日归档**：在 `TimerViewModel` 的 tick / 启动路径检测到自然日变化时，**先**将「存储日 + 存储计数」写入历史字典（若存储日非空且计数 > 0，或计数为 0 也可不写以减噪——**默认：计数 > 0 才写入**），**再**调用 `engine.rolloverCalendarDayIfNeeded` 并将新日计数持久化。
+- **保留策略**：默认**不设过期删除**（单日一条 `Int`，体量可忽略）；若后续需控体积，可在 `save` 时 prune 超过 **730 天**（约两年）的键，v0.3 可不实现 prune。
+- **Service API 建议**（`PomodoroPersistence` 扩展，Domain 仍不依赖 UserDefaults）：
+
+```swift
+func loadDailyHistory() -> [String: Int]
+func recordDay(_ calendarDay: String, count: Int)  // upsert 单日
+func count(for calendarDay: String, in history: [String: Int], todayDay: String, todayCount: Int) -> Int
+// 查询某日：若 calendarDay == todayDay 优先返回内存中 todayCount，否则读 history
+```
+
+- **计数口径**（与 PRD / 现有 Domain 一致）：**仅** `PomodoroEngine.completeCurrentSegmentNaturally` 在工作阶段结束时 `todayCompletedPomodoros += 1`；**跳过工作段不计数**（见 Engine 注释）。历史与「今日完成」须同源，不在 View 层另算。
+
+### 10.2 时区 / 改日期边界
+
+- **正常跨日**：由 ViewModel 周期性 `todayString()` 对比 `engine.currentCalendarDay` 触发归档 + rollover（与现有 `rolloverCalendarDayIfNeeded` 衔接）。
+- **用户回调系统日期**：同一日键再次写入时 **覆盖** 该键计数（last-write-wins）；不尝试合并「虚拟过去」。验收可接受。
+- **时区变更**：一律以当前 `Calendar.current` 重新计算日字符串；若导致日键变化，走与跨日相同的归档逻辑。不在 v0.3 做历史键迁移。
+
+### 10.3 UI：入口与月历
+
+- **入口**：`TimerRootView` 顶栏 `HStack` 右侧操作区，顺序固定为 **「历史」→「设置」**（历史在左）。历史用 **`Button` + `.sheet`**（与设置并列，非塞进设置页）。
+- **accessibilityIdentifier**：
+  - `timer.historyButton`
+  - `history.monthTitle`
+  - `history.previousMonth`
+  - `history.nextMonth`
+  - `history.dayCell.{yyyy-MM-dd}`（每格唯一，便于 UI 测与 VoiceOver）
+- **月历视图**（`Features/History/HistoryCalendarView.swift`，可选轻量 `HistoryViewModel`）：
+  - 默认展示 **当前自然月**；
+  - 顶部：**上一月 / 下一月** 按钮 + 年月标题（如「2026 年 5 月」）；
+  - 主体：**7 列网格**（星期表头跟随 `Calendar.current.firstWeekday`，中文环境下通常为 周日至周六 或 周一至周日，以系统为准）；
+  - **当月内日期格**：上行日期数字，下行完成数；**非当月占位格**（月初/月末补位）留空或弱化，不展示计数；
+  - **无记录日**：仅显示日期数字，**不显示「0」**（与 PRD「0 或留空」取留空方案，全产品一致）；
+  - **今日**：可用细边框或次要强调色区分（可选，不抢主计时区视觉）。
+- **数据绑定**：打开 sheet 时传入 `PomodoroPersistence.loadDailyHistory()` + 当前 `todayDay` / `todayCount`；切换月份仅改 UI 状态，不写盘。关闭 sheet 无需特殊持久化。
+- **键盘**：月份按钮与关闭/返回可 Tab 聚焦；`defaultFocus` 可落在月历容器或「下一月」旁，以 macOS 12 可用 API 为准。
+
+### 10.4 架构边界
+
+| 层 | 职责 |
+|----|------|
+| **Domain** | 不变：仍维护 `todayCompletedPomodoros` 与 `rolloverCalendarDayIfNeeded`；**不** import 历史字典 |
+| **Services** | `PomodoroPersistence` 读写日字典；归档上一日 |
+| **ViewModel** | `TimerViewModel`：完成自然工作段 / tick 跨日后 `save`；`HistoryViewModel`（若有）：按年月向 Persistence 取数并生成月网格模型 |
+| **UI** | 月历纯展示 + 月份切换；不在 View 内改计数 |
+
+**月网格模型**（可放 History feature 内纯 Swift 结构体，便于单测）：
+
+```swift
+struct HistoryMonthGrid {
+    let year: Int
+    let month: Int
+    /// 固定 42 或 6×7 格，含 leading/trailing 占位；每格 optional day + count
+    let cells: [HistoryDayCell]
+}
+```
+
+由 `Calendar` 的 `range(of: .day, in: .month, ...)` 与 `ordinality` 生成，单测用固定 `Calendar`（如 `gregorian` + 固定 timeZone）断言格数与某日 count。
+
+### 10.5 测试与 CI
+
+- **单元测试**（`TomatoClockTests`）：
+  - Persistence：`save` 后 `loadDailyHistory` 含对应日；跨日归档后前一日在历史中、今日键为 0；
+  - 查询逻辑：「今天」优先读 engine 计数而非陈旧 history 同键；
+  - `HistoryMonthGrid`（若抽取）：给定年月与 history，某格 count 正确。
+- **UI 测试**：
+  - 主界面存在 `timer.historyButton`，且布局在 `timer.settingsButton` 左侧（可用相对顺序或 snapshot 区域粗测）；
+  - 点击历史打开 sheet，存在 `history.monthTitle` 与月份切换按钮；
+  - 可选：注入测试 defaults 后断言某 `history.dayCell.yyyy-MM-dd` 标签含完成数。
+- **CI**：与现有一致；新增 Persistence / 网格逻辑须随 PR 通过单测。
+
+### 10.6 明确不实现（v0.3）
+
+- CSV 导出、iCloud、Core Data/SQLite 迁移。
+- 周合计、月合计行、图表组件。
+- 按任务/标签拆分的历史维度。

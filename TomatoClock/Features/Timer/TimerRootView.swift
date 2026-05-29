@@ -3,6 +3,7 @@ import SwiftUI
 struct TimerRootView: View {
     @StateObject private var viewModel = TimerViewModel()
     @State private var showSettings = false
+    @State private var showHistory = false
 
     var body: some View {
         ZStack {
@@ -37,6 +38,14 @@ struct TimerRootView: View {
         .sheet(isPresented: $showSettings) {
             SettingsView(viewModel: viewModel)
         }
+        .sheet(isPresented: $showHistory) {
+            let snapshot = viewModel.dailyHistorySnapshot()
+            HistoryCalendarView(
+                todayDay: snapshot.todayDay,
+                todayCount: snapshot.todayCount,
+                history: snapshot.history
+            )
+        }
         .onAppear {
             viewModel.requestNotifications()
         }
@@ -56,11 +65,19 @@ struct TimerRootView: View {
                 .font(.title2.weight(.semibold))
                 .foregroundStyle(.primary)
             Spacer()
-            Button("设置") {
-                showSettings = true
+            HStack(spacing: 8) {
+                Button("历史") {
+                    showHistory = true
+                }
+                .buttonStyle(TomatoTimerSecondaryButtonStyle(phase: viewModel.engine.phase, enabled: true))
+                .accessibilityIdentifier("timer.historyButton")
+
+                Button("设置") {
+                    showSettings = true
+                }
+                .buttonStyle(TomatoTimerSecondaryButtonStyle(phase: viewModel.engine.phase, enabled: true))
+                .accessibilityIdentifier("timer.settingsButton")
             }
-            .buttonStyle(TomatoTimerSecondaryButtonStyle(phase: viewModel.engine.phase, enabled: true))
-            .accessibilityIdentifier("timer.settingsButton")
         }
     }
 
